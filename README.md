@@ -18,7 +18,7 @@ App 内购买项目能让用户在您的 App 中安全地购买***内容、功�
 
 首先来认识iap的四种类型。
 
-![](https://www.notion.so/iOS-App-4d71381c97ff42ca8e7e19b8dc80a7ba#95cd4686d86e47f59af6d19282ba55fc)
+![](/img/type.png)
 
 我们可以通过 Product 的 type 来判断当前商品属于哪种类型：
 
