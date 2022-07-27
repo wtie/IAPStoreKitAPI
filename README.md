@@ -10,11 +10,15 @@
 
 App 内购买项目能让用户在您的 App 中安全地购买***内容、功能或服务***。每个 App 最多可以创建 10,000 个 App 内购买项目。App 内购买项目共有四种类型：消耗型、非消耗型、自动续期订阅和非续期订阅。
 
+<!--📌 App中购买商品不需要使用App内购买项目，比如淘宝、京东等电商类App。-->
+
 <aside> 📌 App中购买商品不需要使用App内购买项目，比如淘宝、京东等电商类App。
 
 苹果提供的技术框架是 StoreKit，里面最主要的就是 In-App Purchase，俗称 iap，也就是App内购买项目。
 
 <aside> ♨️ 用户购买商品，我们需要提供订单和支付两大系统来支持。不同于微信和支付包支付只提供支付能力，iap同时提供了订单和支付两种系统能力，这在没有服务端的App场景下非常便利
+
+
 
 首先来认识iap的四种类型。
 
@@ -86,14 +90,14 @@ func requestProducts() async {
         case .consumable:
         print("消耗型项目")
         case .nonConsumable:
-				print("非消耗型项目")
+        print("非消耗型项目")
 				case .autoRenewable:
-				print("自动续费订阅")
-				case .nonRenewable:
-				print("非续费订阅")
-				default:
-				//Ignore this product.
-				print("Unknown product")
+        print("自动续费订阅")
+        case .nonRenewable:
+        print("非续费订阅")
+        default:
+        //Ignore this product.
+        print("Unknown product")
       }
     }
   } catch {
@@ -104,52 +108,51 @@ func requestProducts() async {
 
 ```swift
 func purchase(_ product: Product) async throws -> Transaction? {
-    // 开始购买用户选择的产品
-	 let result = try await product.purchase()
-   
-   switch result {
-	 case .success(let verification):
-      //验证交易信息是否正确，如果不正确，这个方法会抛出验证的异常信息
-      let transaction = try checkVerified(verification)
-      //交易信息验证通过，交付内容给用户
-			await updateCustomerProductStatus()
-		  //总是完成一笔交易
-			await transaction.finish()
-      return transaction
-	 }
-   case .userCancelled, .pending:
-			return nil
-   default:
-      return nil
+  // 开始购买用户选择的产品
+  let result = try await product.purchase() 
+  switch result {
+    case .success(let verification):
+    //验证交易信息是否正确，如果不正确，这个方法会抛出验证的异常信息
+    let transaction = try checkVerified(verification)
+    //交易信息验证通过，交付内容给用户
+    await updateCustomerProductStatus()
+    //总是完成一笔交易
+    await transaction.finish()
+    return transaction
+  }
+  case .userCancelled, .pending:
+  return nil
+  default:
+  return nil
 }
 ```
 
 ```swift
 func updateCustomerProductStates() async {
-		 // 循环所有用户已购买的商品
-		 for await result in Transaction.currentEntitlements {
-				 do {
-		         //验证交易信息是否正确，如果不正确，这个方法会抛出验证的异常信息
-				     let transaction = try checkVerified(verification)
-				 } catch {
-						print()
-				 }
-     }
+  // 循环所有用户已购买的商品
+  for await result in Transaction.currentEntitlements {
+    do {
+      //验证交易信息是否正确，如果不正确，这个方法会抛出验证的异常信息
+      let transaction = try checkVerified(verification)
+    } catch {
+      print()
+    }
+  }
 }
 ```
 
 ```swift
 func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
-        //Check whether the JWS passes StoreKit verification.
-        switch result {
-        case .unverified:
-            //StoreKit parses the JWS, but it fails verification.
-            throw StoreError.failedVerification
-        case .verified(let safe):
-            //The result is verified. Return the unwrapped value.
-            return safe
-        }
-    }
+  //Check whether the JWS passes StoreKit verification.
+  switch result {
+    case .unverified:
+    //StoreKit parses the JWS, but it fails verification.
+    throw StoreError.failedVerification
+    case .verified(let safe):
+    //The result is verified. Return the unwrapped value.
+    return safe
+  }
+}
 ```
 
 以上代码环境是 iOS15+、iPadOS15+、Xcode13.4+ 
