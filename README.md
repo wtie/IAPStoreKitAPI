@@ -78,15 +78,14 @@ deinit {
 
 ```swift
 func requestProducts() async {
-		do {
-			 // 使用商品的identifiers请求商品信息
-			 let storeProducts = try await Proudct.products(for: productIdToEmoji.keys)
-       
-       for product in storeProducts {
-				  switch product.type {
-					case .consumable:
-				print("消耗型项目")
-				case .nonConsumable:
+  do {
+    // 使用商品的identifiers请求商品信息
+    let storeProducts = try await Proudct.products(for: productIdToEmoji.keys)
+    for product in storeProducts {
+      switch product.type {
+        case .consumable:
+        print("消耗型项目")
+        case .nonConsumable:
 				print("非消耗型项目")
 				case .autoRenewable:
 				print("自动续费订阅")
@@ -95,11 +94,11 @@ func requestProducts() async {
 				default:
 				//Ignore this product.
 				print("Unknown product")
-				}
-			 }
-		} catch {
-			 print("Failed product request from the App Store server:\(error)")
-		}
+      }
+    }
+  } catch {
+    print("Failed product request from the App Store server:\(error)")
+  }
 }
 ```
 
