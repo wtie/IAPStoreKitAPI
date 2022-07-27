@@ -130,12 +130,25 @@ func updateCustomerProductStates() async {
     do {
       //验证交易信息是否正确，如果不正确，这个方法会抛出验证的异常信息
       let transaction = try checkVerified(verification)
+      switch transaction.productType {
+        case .nonConsumable:
+        print("非消耗型项目")
+        case .autoRenewable:
+        print("自动续费订阅")
+        case .nonRenewable:
+        print("非续费订阅")
+        default:
+        //Ignore this product.
+        print("Unknown product")
+      }
     } catch {
       print()
     }
   }
 }
 ```
+
+> 上述代码中循环用户已购买项目，并没有对consumable类型做处理，是因为consumable类型的项目购买成功后transaction.finish() 后交易信息就会被销毁，并不会存储到currentEntitlements里。
 
 ```swift
 func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
